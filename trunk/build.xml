@@ -1,0 +1,175 @@
+<?xml version="1.0"?>
+<project name="orthanc" default="compile" basedir="." xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+	<property environment="env" />
+	<property name="jar.src" value="src" />
+	<property name="jar.src.main" value="src/main" />
+	<property name="jar.src.test" value="src/test/unit" />
+	<property name="jar.classes" value="build/classes" />
+	<property name="jar.classes.main" value="build/classes/main" />
+	<property name="jar.classes.test" value="build/classes/test/unit" />
+	<property name="jar.lib" value="WebContent/WEB-INF/lib" />
+	<property name="jar.lib.build" value="build/lib" />
+	<property name="jar.dest" value="WebContent/WEB-INF/lib" />
+
+	<property name="war.dest" value="build" />
+	<property name="war.src" value="WebContent" />
+
+	<property name="java.build" value="." />
+	<property name="reports.tests" value="reports/test" />
+
+	<property file="build/build.properties" />
+	<property file="build/default.properties" />
+
+	<path id="src.path">
+		<fileset dir="${jar.src.main}">
+			<include name="**/*.java" />
+		</fileset>
+	</path>
+
+	<path id="jar.classpath.main">
+		<pathelement path="${jar.classes.main}" />
+		<fileset dir="${jar.lib}">
+			<include name="**/*.jar" />
+		</fileset>
+		<fileset dir="${jar.lib.build}">
+			<include name="**/*.jar" />
+		</fileset>
+		<fileset dir="${env.CATALINA_HOME}">
+			<include name="**/*.jar" />
+		</fileset>
+
+	</path>
+
+	<!--path id="maven-ant-tasks.classpath" path="build/lib-nopom/maven-ant-tasks-2.1.3.jar" /-->
+	<!--typedef resource="org/apache/maven/artifact/ant/antlib.xml"
+           uri="antlib:org.apache.maven.artifact.ant"
+           classpathref="maven-ant-tasks.classpath" /-->
+	<typedef resource="org/tigris/subversion/svnant/svnantlib.xml" classpathref="jar.classpath.main" />
+	<taskdef classpathref="jar.classpath.main" resource="tasks.properties" />
+	<!--import file="build/dependencies.xml"/-->
+
+	<target name="precompile">
+		<mkdir dir="${jar.classes.main}" />
+		<!--javacc target="${jar.src.main}/com/adichad/lucense/expression/parse/ExpressionParser.jj" javacchome="build/lib" /-->
+		<!--copy todir="build/lib">
+      <fileset refid="build.dependency.fileset" />
+      <mapper type="flatten" />
+    </copy>
+
+    <copy todir="WebContent/WEB-INF/lib">
+      <fileset refid="dependency.fileset" />
+      <mapper type="flatten" />
+    </copy-->
+	</target>
+	<target name="precompiletest">
+		<mkdir dir="${jar.classes.test}" />
+		<mkdir dir="${reports.tests}/coverage" />
+		<mkdir dir="${reports.tests}/results/xml" />
+		<svn>
+			<update>
+				<fileset dir="${jar.src.test}">
+					<include name="**/*.java" />
+				</fileset>
+			</update>
+		</svn>
+	</target>
+	<taskdef resource="scala/tools/ant/antlib.xml">
+    <classpath>
+      <pathelement location="${jar.lib.build}/scala-compiler.jar" />
+      <pathelement location="${jar.lib}/scala-library.jar" />
+    </classpath>
+  </taskdef>
+	<target name="compile" depends="precompile">
+		<!-- Compile and package -->
+
+		<scalac srcdir="${jar.src.main}" destdir="${jar.classes.main}">
+      <classpath refid="jar.classpath.main" />
+      <include name="**/*.scala"/>
+    </scalac>
+		<javac srcdir="${jar.src.main}" destdir="${jar.classes.main}" target="1.7" debug="on" includeantruntime="false">
+			<classpath refid="jar.classpath.main" />
+			<include name="**/*.java" />
+			<compilerarg value="-Xlint:deprecation" />
+		</javac>
+
+		<jar destfile="${jar.dest}/${component.name}.jar" basedir="${jar.classes.main}" update="true" />
+		<war destfile="${war.dest}/${component.name}.war" basedir="${war.src}" webxml="${war.src}/WEB-INF/web.xml" update="true" />
+	</target>
+
+	<target name="clean">
+		<delete dir="${jar.classes.main}" />
+		<delete>
+			<fileset dir="${jar.dest}">
+				<include name="${component.name}.jar" />
+			</fileset>
+			<fileset dir="${war.dest}">
+				<include name="${component.name}.war" />
+			</fileset>
+		</delete>
+	</target>
+
+	<target name="testcompile" depends="precompiletest">
+		<delete>
+			<fileset dir="${java.binary}">
+				<include name="${component.name}test.jar" />
+			</fileset>
+		</delete>
+
+		<javac srcdir="${java.source}/test/unit" destdir="${java.binary}/classes/test/unit" target="1.7" debug="on" includeantruntime="false">
+			<classpath refid="test.class.path" />
+			<compilerarg value="-Xlint:deprecation" />
+		</javac>
+		<jar destfile="${java.binary}/${component.name}test.jar" basedir="${java.binary}/classes/test/unit" update="true" />
+
+	</target>
+
+	<target name="testrun" depends="compile,testcompile">
+		<delete>
+			<fileset dir=".">
+				<include name="cobertura.ser" />
+			</fileset>
+		</delete>
+		<cobertura-instrument todir="${java.binary}/instrumented-classes/main">
+			<fileset dir="build/classes/main">
+				<include name="**/*.class" />
+				<exclude name="**/*Test*" />
+			</fileset>
+		</cobertura-instrument>
+		<copy todir="/tmp/data">
+			<fileset dir="${reports.tests}/data" />
+		</copy>
+		<junit haltonfailure="true" printsummary="yes">
+			<classpath refid="junit.class.path" />
+			<classpath refid="class.path" />
+			<classpath refid="test.class.path" />
+			<formatter type="xml" />
+			<batchtest fork="yes" todir="${reports.tests}/results/xml" haltonfailure="false">
+				<fileset dir="${java.source}/test/unit">
+					<include name="**/*Test*.java" />
+					<exclude name="**/AllTests.java" />
+				</fileset>
+			</batchtest>
+		</junit>
+		<junitreport todir="${reports.tests}/results/xml">
+			<fileset dir="${reports.tests}/results/xml">
+				<include name="TEST-*.xml" />
+			</fileset>
+			<report format="frames" todir="${reports.tests}/results" />
+		</junitreport>
+		<cobertura-report srcdir="${java.source}/main" destdir="${reports.tests}/coverage" />
+	</target>
+	<target name="release" depends="testrun">
+		<input message="Enter comment to log with this commit:-" addproperty="svn.comment" />
+		<svn>
+			<add force="true">
+				<fileset dir="${reports.tests}">
+					<include name="**/TEST*.*" />
+					<include name="coverage" />
+					<include name="coverage/**/*" />
+				</fileset>
+			</add>
+			<commit dir="${java.build}" message="${svn.comment}" />
+		</svn>
+	</target>
+
+</project>
