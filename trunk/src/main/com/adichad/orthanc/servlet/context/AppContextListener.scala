@@ -3,18 +3,21 @@ package com.adichad.orthanc.servlet.context
 import java.io.File
 import java.io.FileInputStream
 import java.util.Properties
-
 import org.codehaus.jackson.map.ObjectMapper
 import org.codehaus.jackson.mrbean.MrBeanModule
 import org.slf4j.LoggerFactory
-
 import com.adichad.orthanc.config.OrthancConfigurator
 import com.adichad.orthanc.util.Constants
-
 import ch.qos.logback.classic.LoggerContext
 import grizzled.slf4j.Logging
 import javax.servlet.ServletContextEvent
 import javax.servlet.ServletContextListener
+import redis.clients.jedis.JedisPool
+import redis.clients.jedis.JedisPoolConfig
+import redis.clients.jedis.JedisPool.JedisFactory
+import redis.clients.jedis.Jedis
+import redis.clients.jedis.ShardedJedisPool
+import com.adichad.orthanc.config.OrthancConfig
 
 class AppContextListener extends ServletContextListener with Logging with Constants {
 
@@ -29,12 +32,18 @@ class AppContextListener extends ServletContextListener with Logging with Consta
     try prop.load(fis)
     finally if (fis != null) fis.close
 
-    // load application specific configuration
+    // load configured resources
     val mapper = new ObjectMapper
     mapper.registerModule(new MrBeanModule)
     val config = mapper.readValue(
       new File(prop.getProperty(CONF_PATH_KEY) + File.separator
         + prop.getProperty(CONF_FILE_KEY)), classOf[OrthancConfigurator]).configure(null, prop)
+    
+    
+    val jedisPool = new JedisPool(new JedisPoolConfig, prop.getProperty(REDIS_HOST_KEY), 
+        Integer.parseInt(prop.getProperty(REDIS_PORT_KEY)))
+    
+    
     info(config)
    
     // load app configuration and environment properties into servlet context
@@ -42,11 +51,15 @@ class AppContextListener extends ServletContextListener with Logging with Consta
     
     context.setAttribute(CONF_KEY, config)
     context.setAttribute(ENV_KEY, prop)
+    context.setAttribute(CACHE_KEY, jedisPool)
 
     info("app context initialized")
   }
 
   def contextDestroyed(sce: ServletContextEvent): Unit = {
+    val context = sce.getServletContext
+    context.removeAttribute(CONF_KEY).asInstanceOf[OrthancConfig].close()
+    context.removeAttribute(CACHE_KEY).asInstanceOf[JedisPool].destroy()
     info("app context destroyed")
   }
 

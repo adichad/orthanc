@@ -8,4 +8,9 @@ trait Constants {
   final val CONF_FILE_KEY = "file.conf"
   final val CONF_KEY = "conf"
   final val ENV_KEY = "env"
+  final val TIMER_KEY = "timer"
+  final val REQUEST_GROUP_KEY = ""
+  final val REDIS_HOST_KEY = "host.redis"
+  final val REDIS_PORT_KEY = "port.redis"
+  final val CACHE_KEY = "cache"
 }
