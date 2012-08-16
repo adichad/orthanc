@@ -1,0 +1,10 @@
+<ivy-module version="2.0">
+  <info organisation="com.adichad" module="orthanc"/>
+  
+  <dependencies>
+    <dependency org="net.sourceforge.cobertura" name="cobertura" rev="1.9.4.1" />
+    <dependency org="net.java.dev.javacc" name="javacc" rev="5.0" />
+    <dependency org="org.scala-lang" name="scala-compiler" rev="2.9.2" />
+  </dependencies>
+
+</ivy-module>

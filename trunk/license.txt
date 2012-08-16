@@ -1,5 +1,5 @@
 /**
- * ${file_name}, part of Orthanc
+ * Orthanc
  * Copyright 2012 Aditya Varun Chadha
  *
  * Licensed under the Apache License, Version 2.0 (the "License");

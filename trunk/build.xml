@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="orthanc" default="compile" basedir="." xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+<project name="orthanc" default="compile" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant" >
 	<property environment="env" />
 	<property name="jar.src" value="src" />
 	<property name="jar.src.main" value="src/main" />
@@ -49,7 +49,9 @@
 	<!--import file="build/dependencies.xml"/-->
 
 	<target name="precompile">
-		<mkdir dir="${jar.classes.main}" />
+    <mkdir dir="${jar.classes.main}" />
+    <!--ivy:retrieve file="build/ivy.xml" pattern="WebContent/WEB-INF/lib/[artifact]-[revision].[ext]"/>
+    <ivy:retrieve file="build/ivy-compile.xml" pattern="build/lib/[artifact]-[revision].[ext]"/-->
 		<!--javacc target="${jar.src.main}/com/adichad/lucense/expression/parse/ExpressionParser.jj" javacchome="build/lib" /-->
 		<!--copy todir="build/lib">
       <fileset refid="build.dependency.fileset" />
