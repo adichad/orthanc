@@ -1,0 +1,30 @@
+<ivy-module ="2.0">
+  <info organisation="org.apache" module="hello-ivy"/>
+  <artifact:dependencies filesetId="build.dependency.fileset" useScope="compile">
+    <dependency org="net.sourceforge.cobertura" name="cobertura" rev="1.9.4.1" />
+    <dependency org="net.java.dev.javacc" name="javacc" rev="5.0" />
+    <dependency org="org.scala-lang" name="scala-compiler" rev="${ver.scala}" />
+  </artifact:dependencies>
+
+  <dependencies>
+    <dependency org="org.apache.lucene" name="lucene-parent" rev="4.0.0-BETA" />
+    <dependency org="org.neo4j" name="neo4j-community" rev="1.8.M07" />
+    <dependency org="org.clapper" name="grizzled-slf4j_2.9.2" rev="0.6.9" />
+    <dependency org="org.slf4j" name="slf4j-api" rev="1.6.6" />
+    <dependency org="ch.qos.logback" name="logback-classic" rev="1.0.6" />
+    <dependency org="ch.qos.logback" name="logback-core" rev="1.0.6" />
+    <dependency org="org.apache.mahout" name="mahout" rev="0.7" />
+    <dependency org="org.apache.mahout" name="mahout-collections" rev="1.0" />
+    <dependency org="redis.clients" name="jedis" rev="2.1.0" />
+    <dependency org="log4j" name="log4j" rev="1.2.17" />
+    <dependency org="org.codehaus.jackson" name="jackson-mapper-asl" rev="1.9.9" />
+    <dependency org="org.codehaus.jackson" name="jackson-core-asl" rev="1.9.9" />
+    <dependency org="org.codehaus.jackson" name="jackson-mrbean" rev="1.9.9" />
+    <dependency org="org.apache.zookeeper" name="zookeeper" rev="3.4.3" />
+    <dependency org="org.mongodb" name="mongo-java-driver" rev="2.8.0" />
+    <dependency org="it.unimi.dsi" name="fastutil" rev="6.4.4" />
+    <dependency org="org.scala-lang" name="scala-library" rev="2.9.2" />
+    <dependency org="org.perf4j" name="perf4j" rev="0.9.16" />
+  </dependencies>
+
+</ivy-module>
