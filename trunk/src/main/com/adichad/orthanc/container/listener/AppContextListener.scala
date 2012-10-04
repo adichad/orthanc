@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package com.adichad.orthanc.servlet.context
+package com.adichad.orthanc.container.listener
 
 import java.io.File
 import java.io.FileInputStream
 import java.util.Properties
-import org.codehaus.jackson.map.ObjectMapper
-import org.codehaus.jackson.mrbean.MrBeanModule
+import com.fasterxml.jackson.module.mrbean.MrBeanModule
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.slf4j.LoggerFactory
 import com.adichad.orthanc.config.OrthancConfigurator
 import com.adichad.orthanc.util.Constants

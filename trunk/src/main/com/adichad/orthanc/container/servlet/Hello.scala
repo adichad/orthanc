@@ -17,12 +17,17 @@
 
 import javax.servlet.http.{ HttpServlet, HttpServletRequest, HttpServletResponse }
 import javax.servlet.annotation.WebServlet
+import grizzled.slf4j.Logging
 
-package com.adichad.orthanc.servlet {
+package com.adichad.orthanc.container.servlet {
   
   @WebServlet(urlPatterns = Array{"/hello"})
-  class Hello extends HttpServlet {
+  class Hello extends HttpServlet with Logging {
     override def doGet(request: HttpServletRequest, response: HttpServletResponse) {
+      response.getWriter.append("Hello, Scala!")
+    }
+    
+    override def doPost(request: HttpServletRequest, response: HttpServletResponse) {
       response.getWriter.append("Hello, Scala!")
     }
   }

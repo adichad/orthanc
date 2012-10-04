@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.adichad.orthanc.servlet.context
+package com.adichad.orthanc.container.listener
 
 import javax.servlet.{ ServletRequestListener, ServletRequestEvent }
 import grizzled.slf4j.Logging
