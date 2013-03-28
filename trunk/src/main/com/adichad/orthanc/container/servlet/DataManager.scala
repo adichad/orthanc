@@ -51,16 +51,16 @@ class DataManager extends HttpServlet with Logging with Constants {
     //resourceMapper.mapToAttributes(request, resources)
 
     val commit = JBool.parseBoolean(request.getParameter("commit"))
-    val innerLog = new TaskStatus
+    //val innerLog = new TaskStatus
     val requestType = request.getServletPath + request.getPathInfo
     request.setAttribute(REQUEST_GROUP_KEY, requestType)
-    try {
-      request.getAttribute(DATA_MANAGER_KEY).asInstanceOf[DataManager].upsert(
-        reader, innerLog, commit);
-      info("["+requestType+"] ["+timer.getElapsedTime()+" ms] "+innerLog.info)
-    } catch {
-      case e: Exception ⇒ error("["+requestType+"] ["+timer.getElapsedTime()+" ms] "+innerLog.info, e)
-    }
+    //try {
+      //request.getAttribute(DATA_MANAGER_KEY).asInstanceOf[DataManager].upsert(
+        //reader, innerLog, commit);
+      //info("["+requestType+"] ["+timer.getElapsedTime()+" ms] "+innerLog.info)
+    //} catch {
+      //case e: Exception ⇒ error("["+requestType+"] ["+timer.getElapsedTime()+" ms] "+innerLog.info, e)
+    //}
 
   }
 
